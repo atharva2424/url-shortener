@@ -17,14 +17,13 @@ public class UrlService {
 
     public String shortenUrl(String originalUrl)
     {
-        String shortUrl = "http://localhost:8080/api/url/";
         UrlObject existingObject = urlRepository.findByOriginalUrl(originalUrl);
         if(existingObject !=null)
         {
             LocalDateTime now = LocalDateTime.now();
             if(existingObject.getExpirationAt().isAfter(now))
             {
-                return shortUrl + existingObject.getShortCode();
+                return existingObject.getShortCode();
             }
             else
             {
@@ -33,13 +32,12 @@ public class UrlService {
             }
         }
         String shortCode = Utility.generateShortCode();
-        shortUrl = shortUrl + shortCode;
         LocalDateTime now = LocalDateTime.now();
         // LocalDateTime expirationTime = now.plusDays(30);
         LocalDateTime expirationTime = now.plusMinutes(5);
         UrlObject object = new UrlObject(shortCode, originalUrl, now, expirationTime, "active", 0L);
         urlRepository.save(object);
-        return shortUrl;
+        return shortCode;
     }
 
     public String getOriginalUrl(String shortCode) {
